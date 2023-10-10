@@ -1,5 +1,6 @@
 "use client"
 
+import TanstackQueryProvider from "@/components/Providers/TanStackQueryProviders"
 import AdminSidebar from "@/components/admin/sidebar"
 import { usePathname } from "next/navigation"
 
@@ -15,7 +16,9 @@ export default function AdminLayout({
                 <AdminSidebar />
             }
             <div className="w-5/6">
-                {children}
+                <TanstackQueryProvider>
+                    {children}
+                </TanstackQueryProvider>
             </div>
         </div>
     )
