@@ -17,6 +17,8 @@ import { Input } from "@/components/ui/input"
 import { useForm } from "react-hook-form"
 import { useMutation } from "@tanstack/react-query"
 import axios from "axios"
+import { Checkbox } from "@/components/ui/checkbox"
+import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
     email: z.string().min(1, {
@@ -25,39 +27,22 @@ const formSchema = z.object({
     password: z.string().min(1, {
         message: "Password cannot null.",
     }),
+    rememberMe: z.boolean().default(false).optional()
 })
 
 export default function LoginForm() {
+    const router = useRouter()
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             email: "",
-            password: ''
+            password: '',
+            rememberMe: false
         },
     })
-
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-        // const res = await fetch('http://localhost:3000/api/admin/auth/login', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify(values),
-        // });
-
-        // if (!res.ok) {
-        //     throw new Error('Login failed');
-        // }
-
-        // const data = await res.json();
-        // console.log(data)
-        // return data;
-        const { email, password } = values
-
-    }
     const { mutate: submitReactHook, isLoading } = useMutation({
-        mutationFn: async (values: z.infer<typeof formSchema>) => await axios.post('/api/admin/auth/login', { email: values.email, password: values.password }),
-        onSuccess: (data) => console.log(data),
+        mutationFn: async ({ email, password, rememberMe }: z.infer<typeof formSchema>) => await axios.post('/api/admin/auth/login', { email, password, rememberMe }),
+        onSuccess: (data) => router.push('/admin'),
         onError: (err) => console.log(err)
     })
 
@@ -87,6 +72,23 @@ export default function LoginForm() {
                                 <Input type="password" placeholder="Enter your password here..." {...field} />
                             </FormControl>
                             <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="rememberMe"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                                <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                />
+                            </FormControl>
+                            <FormLabel>
+                                Remember Me?
+                            </FormLabel>
                         </FormItem>
                     )}
                 />

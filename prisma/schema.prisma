@@ -17,12 +17,22 @@ enum Role {
 }
 
 model User {
+  id         String       @id @default(uuid())
+  name       String
+  role       Role         @default(STUDENT)
+  username   String       @unique
+  email      String       @unique
+  password   String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  User_Token User_Token[]
+}
+
+model User_Token {
   id        String   @id @default(uuid())
-  name      String
-  role      Role     @default(STUDENT)
-  username  String   @unique
-  email     String   @unique
-  password  String
+  User      User     @relation(fields: [UserId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  UserId    String
+  token     String   @db.LongText
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
