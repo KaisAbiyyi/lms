@@ -19,6 +19,8 @@ import { useMutation } from "@tanstack/react-query"
 import axios from "axios"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useRouter } from "next/navigation"
+import { useToast } from "@/components/ui/use-toast"
+import { ToastAction } from "@/components/ui/toast"
 
 const formSchema = z.object({
     email: z.string().min(1, {
@@ -32,6 +34,7 @@ const formSchema = z.object({
 
 export default function LoginForm() {
     const router = useRouter()
+    const { toast } = useToast()
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -43,7 +46,15 @@ export default function LoginForm() {
     const { mutate: submitReactHook, isLoading } = useMutation({
         mutationFn: async ({ email, password, rememberMe }: z.infer<typeof formSchema>) => await axios.post('/api/admin/auth/login', { email, password, rememberMe }),
         onSuccess: (data) => router.push('/admin'),
-        onError: (err) => console.log(err)
+        onError: (err: any) => {
+            toast({
+                title: "Something went wrong",
+                description: err?.response.data.message,
+                action: <ToastAction altText="Try again">Try again</ToastAction>,
+                variant: "destructive",
+            })
+
+        }
     })
 
     return (

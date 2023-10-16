@@ -1,6 +1,6 @@
 "use client"
 
-import TanstackQueryProvider from "@/components/Providers/TanStackQueryProviders"
+import TanstackQueryProvider from "@/components/Providers/TanstackQueryProviders"
 import AdminSidebar from "@/components/admin/sidebar"
 import { usePathname } from "next/navigation"
 
@@ -11,7 +11,7 @@ export default function AdminLayout({
 }) {
     const path = usePathname()
     return (
-        <div className="flex gap-4">
+        <div className="flex gap-4 bg-slate-200">
             {!path.match('/admin/login') &&
                 <AdminSidebar />
             }
