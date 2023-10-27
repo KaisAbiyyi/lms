@@ -39,7 +39,7 @@ export default function AdminSidebar() {
                             <Link href={'/'} className={buttonVariants({ variant: 'white', class: '!justify-start w-full' })}>Student</Link>
                             <Link href={'/'} className={buttonVariants({ variant: 'white', class: '!justify-start w-full' })}>Department</Link>
                             <Link href={'/'} className={buttonVariants({ variant: 'white', class: '!justify-start w-full' })}>Class</Link>
-                            <Link href={'/'} className={buttonVariants({ variant: 'white', class: '!justify-start w-full' })}>Subject</Link>
+                            <Link href={'/admin/subject'} className={buttonVariants({ variant: 'white', class: '!justify-start w-full' })}>Subject</Link>
                         </div>
                     </AccordionContent>
                 </AccordionItem>

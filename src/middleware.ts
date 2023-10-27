@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl
     const smsSession = request.cookies.get('sms-session')?.value
-    const req = await fetch(process.env.APP_URL + "api/auth", { method: "POST", body: JSON.stringify({ token: smsSession }) })
+    const req = await fetch(process.env.APP_URL + "api/auth/" + smsSession, { method: "GET" })
     const res = await req.json()
 
     if (res.success && res.data.role === 'ADMIN' && !pathname.startsWith('/admin')) {
