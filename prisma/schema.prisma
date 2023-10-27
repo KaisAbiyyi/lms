@@ -26,6 +26,8 @@ model User {
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   User_Token User_Token[]
+  Student    Student?
+  Lecturer   Lecturer?
 }
 
 model User_Token {
@@ -35,4 +37,188 @@ model User_Token {
   token     String   @db.LongText
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Grade {
+  id             String           @id
+  Student        Student[]
+  Class          Class[]
+  Subject_Detail Subject_Detail[]
+}
+
+model Department {
+  id               String             @id @default(uuid())
+  name             String
+  fullName         String?
+  Student          Student[]
+  Class            Class[]
+  Department_Title Department_Title[]
+}
+
+model Class {
+  id              String            @id @default(uuid())
+  name            String
+  Student         Student[]
+  Grade           Grade?            @relation(fields: [GradeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  GradeId         String?
+  Department      Department?       @relation(fields: [departmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  departmentId    String?
+  Subject_Classes Subject_Classes[]
+}
+
+model Student {
+  id            String     @id @default(uuid())
+  studentNumber String     @unique
+  name          String
+  User          User       @relation(fields: [UserId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  UserId        String     @unique
+  Grade         Grade      @relation(fields: [GradeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  GradeId       String
+  Department    Department @relation(fields: [DepartmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  DepartmentId  String
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  Result        Result[]
+  Class         Class?     @relation(fields: [ClassId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  ClassId       String?
+}
+
+model Lecturer {
+  id               String             @id @default(uuid())
+  lecturerNumber   String             @unique
+  name             String
+  User             User               @relation(fields: [UserId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  UserId           String             @unique
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  Subject_Detail   Subject_Detail[]
+  Department_Title Department_Title[]
+}
+
+model Department_Title {
+  id           String      @id @default(uuid())
+  name         String
+  Lecturer     Lecturer?   @relation(fields: [LecturerId], references: [id])
+  LecturerId   String?
+  Department   Department? @relation(fields: [departmentId], references: [id])
+  departmentId String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model Subject {
+  id             String           @id @default(uuid())
+  name           String
+  Subject_Detail Subject_Detail[]
+}
+
+model Subject_Detail {
+  id                String              @id @default(uuid())
+  name              String
+  Lecturer          Lecturer?           @relation(fields: [LecturerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  LecturerId        String?
+  Subject           Subject             @relation(fields: [subjectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  subjectId         String
+  Grade             Grade?              @relation(fields: [gradeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  gradeId           String?
+  Learning_Material Learning_Material[]
+  Task              Task[]
+  Test              Test[]
+  Subject_Classes   Subject_Classes[]
+}
+
+model Subject_Classes {
+  id               String         @id @default(uuid())
+  Subject_Detail   Subject_Detail @relation(fields: [subject_DetailId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Class            Class          @relation(fields: [classId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  subject_DetailId String
+  classId          String
+}
+
+model Learning_Material {
+  id               String          @id @default(uuid())
+  title            String
+  description      String          @db.Text
+  file             String
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  Subject_Detail   Subject_Detail? @relation(fields: [subject_DetailId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  subject_DetailId String?
+}
+
+model Task {
+  id               String          @id @default(uuid())
+  title            String
+  description      String          @db.Text
+  deadline         DateTime
+  file             String
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  Task_Report      Task_Report[]
+  Subject_Detail   Subject_Detail? @relation(fields: [subject_DetailId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  subject_DetailId String?
+}
+
+model Task_Report {
+  id        String   @id @default(uuid())
+  file      String
+  Task      Task     @relation(fields: [TaskId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  TaskId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Test {
+  id               String          @id @default(uuid())
+  title            String
+  description      String          @db.Text
+  chances          Int
+  deadline         DateTime
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  Result           Result[]
+  Subject_Detail   Subject_Detail? @relation(fields: [subject_DetailId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  subject_DetailId String?
+}
+
+model Question {
+  id            String          @id @default(uuid())
+  title         String
+  image         String
+  description   String          @db.Text
+  Choice        Choice[]
+  Result_Detail Result_Detail[]
+}
+
+model Choice {
+  id            String          @id @default(uuid())
+  name          String
+  isRight       Boolean
+  Question      Question        @relation(fields: [QuestionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  QuestionId    String
+  Result_Detail Result_Detail[]
+}
+
+model Result {
+  id            String          @id @default(uuid())
+  Test          Test            @relation(fields: [TestId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  TestId        String
+  Student       Student         @relation(fields: [StudentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  StudentId     String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  Result_Detail Result_Detail[]
+}
+
+model Result_Detail {
+  id         String   @id @default(uuid())
+  isRight    Boolean
+  Result     Result   @relation(fields: [ResultId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  ResultId   String
+  Question   Question @relation(fields: [QuestionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  QuestionId String
+  Choice     Choice   @relation(fields: [ChoiceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  ChoiceId   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

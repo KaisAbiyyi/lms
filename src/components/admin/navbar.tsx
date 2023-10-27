@@ -1,5 +1,5 @@
 "use client"
-import ProvileDropdown from "./ProvileDropdown";
+import ProvileDropdown from "./ProfileDropdown";
 
 export default function AdminNavbar() {
 

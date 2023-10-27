@@ -2,8 +2,9 @@ import { NextResponse } from "next/server"
 import jwt from 'jsonwebtoken'
 import { prisma } from "@/lib/db"
 
-export async function GET(request: Request, { token }: { token: string }) {
+export async function GET(request: Request, { params }: { params: { token: string } }) {
     try {
+        const token = params.token;
         const findUserToken = await prisma.user_Token.findFirst({
             where: {
                 token

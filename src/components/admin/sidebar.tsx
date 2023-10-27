@@ -35,7 +35,7 @@ export default function AdminSidebar() {
                     <AccordionContent>
                         <div className="flex flex-col p-2 mt-4 bg-slate-200 rounded-lg gap-2">
                             <Link href={'/'} className={buttonVariants({ variant: 'white', class: '!justify-start w-full' })}>User</Link>
-                            <Link href={'/'} className={buttonVariants({ variant: 'white', class: '!justify-start w-full' })}>Lecturer</Link>
+                            <Link href={'/admin/lecturer'} className={buttonVariants({ variant: 'white', class: '!justify-start w-full' })}>Lecturer</Link>
                             <Link href={'/'} className={buttonVariants({ variant: 'white', class: '!justify-start w-full' })}>Student</Link>
                             <Link href={'/'} className={buttonVariants({ variant: 'white', class: '!justify-start w-full' })}>Department</Link>
                             <Link href={'/'} className={buttonVariants({ variant: 'white', class: '!justify-start w-full' })}>Class</Link>
