@@ -1,4 +1,6 @@
 "use client"
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import ProvileDropdown from "./ProfileDropdown";
 
 export default function AdminNavbar() {
