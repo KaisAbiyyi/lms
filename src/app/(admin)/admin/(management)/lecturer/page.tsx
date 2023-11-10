@@ -23,9 +23,25 @@ import {
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
- 
+import { useToast } from "@/components/ui/use-toast"
+import { zodResolver } from "@hookform/resolvers/zod"
+
 const formSchema = z.object({
-  username: z.string().min(2).max(50),
+    lecturerNumber: z.string().min(1, {
+        message: "Lecturer Number cannot be null"
+    }),
+    name: z.string().min(1, {
+        message: "Name cannot be null"
+    }),
+    username: z.string().min(1, {
+        message: "Username cannot be null"
+    }),
+    email: z.string().min(1, {
+        message: "Email cannot null.",
+    }).email(),
+    password: z.string().min(1, {
+        message: "Password cannot null.",
+    }),
 })
 
 export default function LecturerManagementPage() {
@@ -36,7 +52,17 @@ export default function LecturerManagementPage() {
             email: 'agk@gmail.com',
         }
     ]
-    const form = useForm()
+    const { toast } = useToast();
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            lecturerNumber: "",
+            name: "",
+            username: "",
+            email: "",
+            password: "",
+        }
+    })
     return (
         <>
             <div className="flex flex-col gap-8">
@@ -61,15 +87,71 @@ export default function LecturerManagementPage() {
                                             <DialogTitle>Insert new Lecturer</DialogTitle>
                                         </DialogHeader>
                                         <DialogHeader>
-                                            <Form>
+                                            <Form {...form}>
                                                 <FormField
                                                     control={form.control}
-                                                    name="..."
-                                                    render={() => (
+                                                    name="lecturerNumber"
+                                                    render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel />
+                                                            <FormLabel>Lecturer Number</FormLabel>
                                                             <FormControl>
-                                                                { /* Your form field */}
+                                                                <Input type="number" placeholder="Enter lecturer number here..." {...field} />
+                                                            </FormControl>
+                                                            <FormDescription />
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="name"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Lecturer Name</FormLabel>
+                                                            <FormControl>
+                                                                <Input type="text" placeholder="Enter lecturer name here..." {...field} />
+                                                            </FormControl>
+                                                            <FormDescription />
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="username"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Lecturer Username</FormLabel>
+                                                            <FormControl>
+                                                                <Input type="text" placeholder="Enter lecturer username here..." {...field} />
+                                                            </FormControl>
+                                                            <FormDescription />
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="email"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Lecturer Email</FormLabel>
+                                                            <FormControl>
+                                                                <Input type="email" placeholder="Enter lecturer email here..." {...field} />
+                                                            </FormControl>
+                                                            <FormDescription />
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="password"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Lecturer Password</FormLabel>
+                                                            <FormControl>
+                                                                <Input type="email" placeholder="Enter lecturer password here..." {...field} />
                                                             </FormControl>
                                                             <FormDescription />
                                                             <FormMessage />
@@ -77,7 +159,6 @@ export default function LecturerManagementPage() {
                                                     )}
                                                 />
                                             </Form>
-
                                         </DialogHeader>
                                         <DialogFooter>
                                             <Button>Submit</Button>
