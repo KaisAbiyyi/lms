@@ -11,17 +11,28 @@ import { DataTable } from "./data-table"
 import { Lecturer, columns } from "./columns"
 import { Input } from "@/components/ui/input"
 import FormDialog from "@/components/admin/management/form-dialog"
+import { useQuery } from "@tanstack/react-query"
+import axios from "axios"
+import { table } from "console"
+import SpinnerLoader from "@/components/misc/spinner"
 
 
 
 export default function LecturerManagementPage() {
-    const data: Array<Lecturer> = [
-        {
-            id: "1",
-            name: "Agus komarudin",
-            email: 'agk@gmail.com',
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ["adminLecturer"],
+        queryFn: async () => {
+            const { data } = await axios.get('/api/admin/management/lecturer');
+            return data.data
         }
-    ]
+    })
+    const tableData = data?.map((item: any) => ({
+        id: item.id,
+        lecturerNumber: item.lecturerNumber,
+        name: item.name,
+        email: item.User.email
+    }))
+
     return (
         <>
             <div className="flex flex-col gap-8">
@@ -30,7 +41,9 @@ export default function LecturerManagementPage() {
                     <Card>
                         <CardHeader>
                             <CardDescription>Total</CardDescription>
-                            <CardTitle>12</CardTitle>
+                            <CardTitle>
+                                {isLoading ? <SpinnerLoader /> : data.length}
+                            </CardTitle>
                         </CardHeader>
                     </Card>
                     <Card className="flex-grow flex items-center">
@@ -47,7 +60,10 @@ export default function LecturerManagementPage() {
                         <CardTitle>List of all lecturer</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <DataTable columns={columns} data={data} />
+                        {isLoading ?
+                            <SpinnerLoader /> :
+                            <DataTable columns={columns} data={tableData} />
+                        }
                     </CardContent>
                 </Card>
             </div>

@@ -22,12 +22,13 @@ import * as z from "zod"
 import { useToast } from "@/components/ui/use-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Input } from "@/components/ui/input"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
 import { ToastAction } from "@/components/ui/toast"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useState } from "react"
+import SpinnerLoader from "@/components/misc/spinner"
 
 const formSchema = z.object({
     lecturerNumber: z.string().min(1, {
@@ -54,7 +55,9 @@ const formSchema = z.object({
 
 export default function FormDialog() {
     const { toast } = useToast();
+    const queryClient = useQueryClient()
     const [showPassword, setShowPassword] = useState<boolean>(false)
+    const [open, setOpen] = useState(false)
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -90,8 +93,13 @@ export default function FormDialog() {
     }
 
     const { mutate: submitReactHook, isLoading } = useMutation({
-        mutationFn: async ({ lecturerNumber, name, email }: z.infer<typeof formSchema>) => await axios.post('/api/admin/management/lecturer', { lecturerNumber, name, email }),
-        onSuccess: (data) => console.log(data),
+        mutationFn: async ({ lecturerNumber, name, email, password }: z.infer<typeof formSchema>) => await axios.post('/api/admin/management/lecturer', { lecturerNumber, name, email, password }),
+        onSuccess: (data) => {
+            if (data.data.success) {
+                queryClient.invalidateQueries(['adminLecturer'])
+                setOpen(false)
+            }
+        },
         onError: (err: any) => {
             toast({
                 title: "Something went wrong",
@@ -104,7 +112,7 @@ export default function FormDialog() {
 
     return (
         <CardHeader>
-            <Dialog>
+            <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger className={buttonVariants({ variant: "default" })}>ADD NEW</DialogTrigger>
                 <DialogContent>
                     <Form {...form}>
@@ -160,6 +168,7 @@ export default function FormDialog() {
                                     name="password"
                                     render={({ field }) => (
                                         <FormItem>
+
                                             <FormLabel>Password</FormLabel>
                                             <Button variant="secondary" type="button" onClick={generatePassword} className="block">Generate Password</Button>
                                             <FormControl>
@@ -176,7 +185,12 @@ export default function FormDialog() {
                                 />
                             </DialogHeader>
                             <DialogFooter>
-                                <Button type="submit">Submit</Button>
+                                <Button type="submit" disabled={isLoading}>
+                                    {isLoading ?
+                                        <SpinnerLoader /> :
+                                        "Submit"
+                                    }
+                                </Button>
                             </DialogFooter>
                         </form>
                     </Form>
