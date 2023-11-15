@@ -39,6 +39,12 @@ model User_Token {
   updatedAt DateTime @updatedAt
 }
 
+model Faculty {
+  id         String       @id @default(uuid())
+  name       String
+  Department Department[]
+}
+
 model Grade {
   id             String           @id
   Student        Student[]
@@ -53,6 +59,8 @@ model Department {
   Student          Student[]
   Class            Class[]
   Department_Title Department_Title[]
+  Faculty          Faculty?           @relation(fields: [facultyId], references: [id])
+  facultyId        String?
 }
 
 model Class {

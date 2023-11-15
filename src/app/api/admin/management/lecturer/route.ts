@@ -78,7 +78,7 @@ export async function POST(request: Request) {
             success: true,
             message: "Data created successfully",
             data: createLecturer
-        })
+        },{status:201})
     } catch (error) {
         console.error("Error parsing JSON:", error)
         return NextResponse.json({

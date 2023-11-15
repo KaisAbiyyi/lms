@@ -53,7 +53,7 @@ const formSchema = z.object({
     })
 })
 
-export default function FormDialog() {
+export default function LecturerFormDialog() {
     const { toast } = useToast();
     const queryClient = useQueryClient()
     const [showPassword, setShowPassword] = useState<boolean>(false)
