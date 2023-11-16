@@ -71,7 +71,7 @@ export default function FacultyFormDialog() {
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit((values: z.infer<typeof formSchema>) => submitReactHook(values))}>
                             <DialogHeader>
-                                <DialogTitle>Insert new Lecturer</DialogTitle>
+                                <DialogTitle>Insert new data</DialogTitle>
                             </DialogHeader>
                             <DialogHeader className="mt-4">
                                 <FormField
@@ -81,7 +81,7 @@ export default function FacultyFormDialog() {
                                         <FormItem>
                                             <FormLabel>Name</FormLabel>
                                             <FormControl>
-                                                <Input type="text" placeholder="Enter faculty name here..." {...field} />
+                                                <Input type="text" placeholder="Enter name here..." {...field} />
                                             </FormControl>
                                             <FormDescription />
                                             <FormMessage />

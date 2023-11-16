@@ -55,7 +55,6 @@ model Grade {
 model Department {
   id               String             @id @default(uuid())
   name             String
-  fullName         String?
   Student          Student[]
   Class            Class[]
   Department_Title Department_Title[]

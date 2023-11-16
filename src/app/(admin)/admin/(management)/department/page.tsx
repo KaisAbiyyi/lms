@@ -8,23 +8,23 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import { DataTable } from "./data-table"
-import { Lecturer, columns } from "./columns"
+import { Department, columns } from "./columns"
 import { Input } from "@/components/ui/input"
-import LecturerFormDialog from "./(components)/form-dialog"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import SpinnerLoader from "@/components/misc/spinner"
 import { useToast } from "@/components/ui/use-toast"
 import { ToastAction } from "@/components/ui/toast"
+import FacultyFormDialog from "./(components)/form-dialog"
 
 
 
-export default function LecturerManagementPage() {
+export default function DepartmentManagementPage() {
     const { toast } = useToast()
     const { data, isLoading } = useQuery({
-        queryKey: ["adminLecturer"],
+        queryKey: ["adminDepartment"],
         queryFn: async () => {
-            const { data } = await axios.get('/api/admin/management/lecturer');
+            const { data } = await axios.get('/api/admin/management/department');
             return data.data
         },
         onError: (err: any) => {
@@ -36,17 +36,17 @@ export default function LecturerManagementPage() {
             })
         }
     })
-    const tableData: Lecturer[] = data?.map((item: any) => ({
-        id: item.id,
-        lecturerNumber: item.lecturerNumber,
-        name: item.name,
-        email: item.User.email
+
+   
+
+    const tableData: Department[] = data?.map((item: any) => ({
+        name: item.name
     }))
 
     return (
         <>
             <div className="flex flex-col gap-8">
-                <h1 className="text-2xl font-semibold text-slate-700">Lecturer</h1>
+                <h1 className="text-2xl font-semibold text-slate-700">Department</h1>
                 <div className="flex gap-4">
                     <Card>
                         <CardHeader>
@@ -59,15 +59,15 @@ export default function LecturerManagementPage() {
                     <Card className="flex-grow flex items-center">
                         <div className="flex w-full">
                             <CardHeader className="flex-grow">
-                                <Input id="searchLecturer" placeholder="Search name..." type="text" />
+                                <Input id="searchDepartment" placeholder="Search name..." type="text" />
                             </CardHeader>
-                            <LecturerFormDialog />
+                            <FacultyFormDialog />
                         </div>
                     </Card>
                 </div>
                 <Card>
                     <CardHeader>
-                        <CardTitle>List of all lecturer</CardTitle>
+                        <CardTitle>List of Department</CardTitle>
                     </CardHeader>
                     <CardContent>
                         {isLoading ?

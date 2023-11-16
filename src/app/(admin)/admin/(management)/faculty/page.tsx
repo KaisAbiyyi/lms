@@ -8,7 +8,7 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import { DataTable } from "./data-table"
-import { Lecturer, columns } from "./columns"
+import { Faculty, columns } from "./columns"
 import { Input } from "@/components/ui/input"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
@@ -36,7 +36,7 @@ export default function FacultyManagementPage() {
             })
         }
     })
-    const tableData = data?.map((item: any) => ({
+    const tableData: Faculty[] = data?.map((item: any) => ({
         name: item.name
     }))
 
