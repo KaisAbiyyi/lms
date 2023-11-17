@@ -37,10 +37,9 @@ export default function DepartmentManagementPage() {
         }
     })
 
-   
-
     const tableData: Department[] = data?.map((item: any) => ({
-        name: item.name
+        name: item.name,
+        faculty: item.Faculty.name
     }))
 
     return (

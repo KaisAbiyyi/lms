@@ -3,6 +3,9 @@ import { NextResponse } from "next/server"
 
 export async function GET() {
     const data = await prisma.department.findMany({
+        include: {
+            Faculty: true
+        }
     })
     return NextResponse.json({
         success: true,
@@ -12,12 +15,18 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
-        const { name } = await await request.json();
-        if (name === '') {
+        const { name, faculty } = await await request.json();
+        if (name === '' || faculty === '') {
             const errResponse = [];
             if (name === '') {
                 errResponse.push({
                     error: "Name cannot null"
+                })
+            }
+
+            if (faculty === '') {
+                errResponse.push({
+                    error: "Faculty name cannot null"
                 })
             }
             return NextResponse.json({
@@ -26,27 +35,36 @@ export async function POST(request: Request) {
             }, { status: 403 })
         }
 
-        const checkFaculty = await prisma.department.findFirst({
+        const checkFaculty = await prisma.faculty.findFirst({
             where: {
-                name
+                name: faculty
             }
         })
 
-        if (checkFaculty) return NextResponse.json({
-            success: false,
-            message: "Data already exists"
-        }, { status: 403 })
+        let facultyId: string
 
-        const createFaculty = await prisma.department.create({
+        if (checkFaculty) {
+            facultyId = checkFaculty?.id
+        } else {
+            const createFaculty = await prisma.faculty.create({
+                data: {
+                    name: faculty
+                }
+            })
+            facultyId = createFaculty?.id
+        }
+
+        const createDepartment = await prisma.department.create({
             data: {
-                name
+                name,
+                facultyId
             }
         })
 
         return NextResponse.json({
             success: true,
             message: "Data added successfully",
-            data: createFaculty
+            data: createDepartment
         }, { status: 201 })
     } catch (error) {
 

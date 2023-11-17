@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table"
 // You can use a Zod schema here if you want.
 export type Department = {
   name: string
+  faculty: string
 }
 
 export const columns: ColumnDef<Department>[] = [
@@ -13,4 +14,8 @@ export const columns: ColumnDef<Department>[] = [
     accessorKey: "name",
     header: "Name",
   },
+  {
+    accessorKey: "faculty",
+    header: "Faculty"
+  }
 ]
