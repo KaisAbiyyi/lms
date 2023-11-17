@@ -3,6 +3,9 @@ import { NextResponse } from "next/server"
 
 export async function GET() {
     const data = await prisma.faculty.findMany({
+        include: {
+            Department: true
+        }
     })
     return NextResponse.json({
         success: true,

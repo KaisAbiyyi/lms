@@ -37,7 +37,8 @@ export default function FacultyManagementPage() {
         }
     })
     const tableData: Faculty[] = data?.map((item: any) => ({
-        name: item.name
+        name: item.name,
+        departments: item.Department
     }))
 
     return (
