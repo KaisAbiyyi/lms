@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Department } from "../department/columns"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown } from "lucide-react"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
