@@ -18,57 +18,17 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from "react"
-import { Lecturer } from "@prisma/client"
+import { useMutation } from "@tanstack/react-query"
+import { EditableCell, Lecturer } from "./columns"
+import axios from "axios"
+import { useToast } from "@/components/ui/use-toast"
+import { ToastAction } from "@/components/ui/toast"
+import { Input } from "@/components/ui/input"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
 }
-
-interface EditableCellProps {
-    value: any;
-    row: any;
-    column: any;
-    table: any
-}
-
-const EditableCell: FC<EditableCellProps> = ({
-    value: initialValue,
-    row: { index },
-    column: { id },
-    table,
-}) => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [value, setValue] = useState(initialValue);
-
-    const handleClick = () => {
-        setIsEditing(!isEditing);
-    };
-
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setValue(e.target.value);
-    };
-
-    const handleBlur = () => {
-        table.options.meta?.updateData(index, id, value);
-        setIsEditing(false);
-    };
-
-    useEffect(() => {
-        setValue(initialValue);
-    }, [initialValue]);
-
-    return isEditing ? (
-        <input
-            value={value as string}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            autoFocus
-        />
-    ) : (
-        <span onDoubleClick={handleClick}>{value}</span>
-    );
-};
 
 
 const defaultColumn: Partial<ColumnDef<Lecturer>> = {
@@ -101,6 +61,8 @@ function useSkipper() {
     return [shouldSkip, skip] as const
 }
 
+
+
 export function DataTable<TData extends Lecturer, TValue>({
     columns,
     data,
@@ -108,6 +70,21 @@ export function DataTable<TData extends Lecturer, TValue>({
     const [sorting, setSorting] = useState<SortingState>([])
     const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper()
     const [tableData, setData] = useState<TData[]>(data)
+
+    const { toast } = useToast();
+    const { mutate: UpdateData } = useMutation({
+        mutationFn: async ({ id, lecturerNumber, name, email }: Lecturer) => await axios.post(`/api/admin/management/lecturer/${id}`, { lecturerNumber, name, email }),
+        onSuccess: (data) => console.log('success'),
+        onError: (err: any) => {
+            toast({
+                title: "Something went wrong",
+                description: err?.response.data.message,
+                action: <ToastAction altText="Try again">Try again</ToastAction>,
+                variant: "destructive",
+            })
+        }
+    })
+
     const table = useReactTable({
         data: tableData,
         columns: columns as ColumnDef<Lecturer, any>[],
@@ -119,12 +96,15 @@ export function DataTable<TData extends Lecturer, TValue>({
             sorting,
         },
         meta: {
-            updateData: (rowIndex: any, columnId: any, value: any) => {
+            updateData: (rowIndex: any, columnId: keyof Lecturer, value: any) => {
                 // Skip page index reset until after next rerender
                 skipAutoResetPageIndex()
                 setData(old =>
                     old.map((row, index) => {
                         if (index === rowIndex) {
+                            if (row[columnId] !== value) {
+                                UpdateData({ ...old[rowIndex]!, [columnId]: value })
+                            }
                             return {
                                 ...old[rowIndex]!,
                                 [columnId]: value,
@@ -162,14 +142,18 @@ export function DataTable<TData extends Lecturer, TValue>({
                     {table.getRowModel().rows?.length ? (
                         table.getRowModel().rows.map((row) => (
                             <TableRow
+                                className="hover:bg-muted/0"
                                 key={row.id}
                                 data-state={row.getIsSelected() && "selected"}
                             >
-                                {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </TableCell>
-                                ))}
+                                {row.getVisibleCells().map((cell) => {
+                                    const width: string = 100 / row.getVisibleCells().length + "%"
+                                    return (
+                                        <TableCell className="p-0 border hover:bg-muted/50" style={{ width }} key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    )
+                                })}
                             </TableRow>
                         ))
                     ) : (
