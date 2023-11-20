@@ -17,13 +17,12 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useMutation } from "@tanstack/react-query"
 import { EditableCell, Lecturer } from "./columns"
 import axios from "axios"
 import { useToast } from "@/components/ui/use-toast"
 import { ToastAction } from "@/components/ui/toast"
-import { Input } from "@/components/ui/input"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -61,7 +60,9 @@ function useSkipper() {
     return [shouldSkip, skip] as const
 }
 
-
+const isNumeric = (str: string): boolean => {
+    return /^\d+$/.test(str)
+}
 
 export function DataTable<TData extends Lecturer, TValue>({
     columns,
@@ -103,11 +104,24 @@ export function DataTable<TData extends Lecturer, TValue>({
                     old.map((row, index) => {
                         if (index === rowIndex) {
                             if (row[columnId] !== value) {
-                                UpdateData({ ...old[rowIndex]!, [columnId]: value })
-                            }
-                            return {
-                                ...old[rowIndex]!,
-                                [columnId]: value,
+                                if (columnId === 'lecturerNumber' && isNumeric(value)) {
+                                    UpdateData({ ...old[rowIndex]!, [columnId]: value })
+                                    return {
+                                        ...old[rowIndex]!,
+                                        [columnId]: value,
+                                    }
+                                } else {
+                                    toast({
+                                        title: "Something went wrong",
+                                        description: "Lecturer Number must be a number",
+                                        action: <ToastAction altText="Try again">Try again</ToastAction>,
+                                        variant: "destructive",
+                                    })
+                                    return {
+                                        ...old[rowIndex]!,
+                                        [columnId]: row[columnId],
+                                    }
+                                }
                             }
                         }
                         return row

@@ -1,16 +1,11 @@
 "use client"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
-    Card,
-    CardContent,
-    CardDescription,
     CardHeader,
-    CardTitle
 } from "@/components/ui/card"
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -61,7 +56,6 @@ export default function LecturerFormDialog() {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            lecturerNumber: "",
             name: "",
             email: "",
             password: "",
