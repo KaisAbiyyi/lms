@@ -31,32 +31,32 @@ export const EditableCell: FC<EditableCellProps> = ({
   const [value, setValue] = useState(initialValue);
 
   const handleClick = () => {
-      setIsEditing(!isEditing);
+    setIsEditing(!isEditing);
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-      setValue(e.target.value);
+    setValue(e.target.value);
   };
 
   const handleBlur = () => {
-      table.options.meta?.updateData(index, id, value);
-      setIsEditing(false);
+    table.options.meta?.updateData(index, id, value);
+    setIsEditing(false);
   };
 
   useEffect(() => {
-      setValue(initialValue);
+    setValue(initialValue);
   }, [initialValue]);
 
   return isEditing ? (
-      <input
-          className="p-4 w-full outline-none drop-shadow-xl z-40"
-          value={value as string}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          autoFocus
-      />
+    <input
+      className="p-4 w-full outline-none drop-shadow-xl z-40"
+      value={value as string}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      autoFocus
+    />
   ) : (
-      <span className="p-4 block w-full" onDoubleClick={handleClick}>{value}</span>
+    <span className="p-4 block w-full" onDoubleClick={handleClick}>{value}</span>
   );
 };
 

@@ -20,13 +20,13 @@ export default function AdminSidebar() {
             <Link href={'/admin'} className="px-4 text-lg font-bold">LMS</Link>
             <Link
                 href={'/admin'}
-                className={`${buttonVariants({ variant: 'turnBlue', class: '!justify-start' })} ${router === '/admin' && buttonVariants({ variant: "default" })}`}>
+                className={`${buttonVariants({ variant: 'turnPrimary', class: '!justify-start' })} ${router === '/admin' && buttonVariants({ variant: "default" })}`}>
                 <HomeIcon size={16} className="mr-2 h-4 w-4" />
                 Home
             </Link>
             <Accordion type="multiple">
                 <AccordionItem value="item-1" className="!border-none">
-                    <AccordionTrigger className={buttonVariants({ variant: "turnBlue", class: '!justify-between !no-underline' })}>
+                    <AccordionTrigger className={buttonVariants({ variant: "turnPrimary", class: '!justify-between !no-underline' })}>
                         <div className="flex items-center">
                             <DatabaseIcon size={16} className="mr-2 h-4 w-4" />
                             Manage
