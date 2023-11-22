@@ -15,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
+        <main className='font-sans'>
+          {children}
+        </main>
         <Toaster />
       </body>
     </html>

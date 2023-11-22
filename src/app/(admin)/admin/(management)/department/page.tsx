@@ -38,8 +38,15 @@ export default function DepartmentManagementPage() {
     })
 
     const tableData: Department[] = data?.map((item: any) => ({
-        name: item.name,
-        faculty: item.Faculty.name
+        id: item.id,
+        name: {
+            value: item.name,
+            type: "text"
+        },
+        faculty: {
+            value: item.Faculty.name,
+            type: "link"
+        }
     }))
 
     return (

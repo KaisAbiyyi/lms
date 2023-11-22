@@ -1,9 +1,13 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { ToastAction } from "@/components/ui/toast"
+import { useToast } from "@/components/ui/use-toast"
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import { ChangeEvent, FC, useEffect, useState } from "react"
+import { isNumeric } from "./data-table"
+import { Input } from "@/components/ui/input"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -29,13 +33,24 @@ export const EditableCell: FC<EditableCellProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(initialValue);
+  const { toast } = useToast();
+  console.log(table)
 
   const handleClick = () => {
     setIsEditing(!isEditing);
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
+    if (id === 'lecturerNumber' && !isNumeric(e.target.value)) {
+      toast({
+        title: "Something went wrong",
+        description: "Lecturer Number must be a number",
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+        variant: "destructive",
+      })
+    } else {
+      setValue(e.target.value);
+    }
   };
 
   const handleBlur = () => {

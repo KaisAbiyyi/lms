@@ -2,6 +2,7 @@
 
 import {
     ColumnDef,
+    SortingState,
     flexRender,
     getCoreRowModel,
     useReactTable,
@@ -15,20 +16,96 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { Department, EditableCell } from "./columns"
+import { useMutation } from "@tanstack/react-query"
+import { useToast } from "@/components/ui/use-toast"
+import { ToastAction } from "@/components/ui/toast"
+import axios from "axios"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
 }
 
-export function DataTable<TData, TValue>({
+const defaultColumn: Partial<ColumnDef<Department>> = {
+    cell: ({ getValue, row: { index }, column: { id }, table }) => {
+        const initialValue = getValue();
+        return (
+            <EditableCell
+                value={initialValue}
+                row={{ index }}
+                column={{ id }}
+                table={table}
+            />
+        );
+    },
+};
+
+
+function useSkipper() {
+    const shouldSkipRef = useRef(true)
+    const shouldSkip = shouldSkipRef.current
+
+    // Wrap a function with this to skip a pagination reset temporarily
+    const skip = useCallback(() => {
+        shouldSkipRef.current = false
+    }, [])
+
+    useEffect(() => {
+        shouldSkipRef.current = true
+    })
+
+    return [shouldSkip, skip] as const
+}
+
+export function DataTable<TData extends Department, TValue>({
     columns,
     data,
 }: DataTableProps<TData, TValue>) {
+    const [sorting, setSorting] = useState<SortingState>([])
+    const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper()
+    const [tableData, setData] = useState<TData[]>(data)
+
+    const { toast } = useToast();
+    const { mutate: UpdateData } = useMutation({
+        mutationFn: async ({ id, name, faculty }: Department) => await axios.post(`/api/admin/management/department/${id}`, { name, faculty }),
+        onSuccess: (data) => console.log('success'),
+        onError: (err: any) => {
+            toast({
+                title: "Something went wrong",
+                description: err?.response.data.message,
+                action: <ToastAction altText="Try again">Try again</ToastAction>,
+                variant: "destructive",
+            })
+        }
+    })
+
     const table = useReactTable({
-        data,
-        columns,
+        data: tableData,
+        columns: columns as ColumnDef<Department, any>[],
         getCoreRowModel: getCoreRowModel(),
+        defaultColumn,
+        meta: {
+            updateData: (rowIndex: any, columnId: keyof Department, value: any) => {
+                // Skip page index reset until after next rerender
+                skipAutoResetPageIndex()
+                setData(old =>
+                    old.map((row, index) => {
+                        if (index === rowIndex) {
+                            if (row[columnId] !== value) {
+                                UpdateData({ ...old[rowIndex]!, [columnId]: value })
+                                return {
+                                    ...old[rowIndex]!,
+                                    [columnId]: value,
+                                }
+                            }
+                        }
+                        return row
+                    })
+                )
+            },
+        },
     })
 
     return (
@@ -56,14 +133,18 @@ export function DataTable<TData, TValue>({
                     {table.getRowModel().rows?.length ? (
                         table.getRowModel().rows.map((row) => (
                             <TableRow
+                                className="hover:bg-muted/0"
                                 key={row.id}
                                 data-state={row.getIsSelected() && "selected"}
                             >
-                                {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </TableCell>
-                                ))}
+                                {row.getVisibleCells().map((cell) => {
+                                    const width: string = 100 / row.getVisibleCells().length + "%"
+                                    return (
+                                        <TableCell className="p-0 border hover:bg-muted/50" style={{ width }} key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    )
+                                })}
                             </TableRow>
                         ))
                     ) : (

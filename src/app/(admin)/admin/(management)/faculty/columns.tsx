@@ -48,11 +48,11 @@ export const columns: ColumnDef<Faculty>[] = [
       const router = useRouter()
       return (
         <div className="flex flex-wrap gap-2">
-          {department.map((item: Department) => (
+          {department.map((item: any) => (
             <Button
               type="button"
-              variant={'secondary'}
-              className="hover:bg-blue-500 hover:text-slate-100"
+              variant={'turnPrimary'}
+              className="bg-secondary"
               size={"sm"}
               onClick={() => router.push(`/admin/department/${item.name.toLowerCase().replaceAll(' ', '-')}`)}
             >

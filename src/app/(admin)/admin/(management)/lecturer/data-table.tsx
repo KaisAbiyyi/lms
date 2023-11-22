@@ -60,7 +60,7 @@ function useSkipper() {
     return [shouldSkip, skip] as const
 }
 
-const isNumeric = (str: string): boolean => {
+export const isNumeric = (str: string): boolean => {
     return /^\d+$/.test(str)
 }
 
@@ -104,13 +104,7 @@ export function DataTable<TData extends Lecturer, TValue>({
                     old.map((row, index) => {
                         if (index === rowIndex) {
                             if (row[columnId] !== value) {
-                                if (columnId === 'lecturerNumber' && isNumeric(value)) {
-                                    UpdateData({ ...old[rowIndex]!, [columnId]: value })
-                                    return {
-                                        ...old[rowIndex]!,
-                                        [columnId]: value,
-                                    }
-                                } else {
+                                if (columnId === 'lecturerNumber' && !isNumeric(value)) {
                                     toast({
                                         title: "Something went wrong",
                                         description: "Lecturer Number must be a number",
@@ -120,6 +114,17 @@ export function DataTable<TData extends Lecturer, TValue>({
                                     return {
                                         ...old[rowIndex]!,
                                         [columnId]: row[columnId],
+                                    }
+                                } else {
+                                    UpdateData({ ...old[rowIndex]!, [columnId]: value })
+                                    toast({
+                                        title: "Data Updated",
+                                        description: columnId + " updated successfuly.",
+                                        variant: "success"
+                                    })
+                                    return {
+                                        ...old[rowIndex]!,
+                                        [columnId]: value,
                                     }
                                 }
                             }
