@@ -9,7 +9,10 @@ import { ChangeEvent, FC, useEffect, useState } from "react"
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Department = {
-  id: string
+  id: {
+    value: string,
+    type: "text"
+  }
   name: {
     value: string
     type: "text" | "link"

@@ -5,6 +5,7 @@ import {
     SortingState,
     flexRender,
     getCoreRowModel,
+    getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
 
@@ -69,8 +70,18 @@ export function DataTable<TData extends Department, TValue>({
 
     const { toast } = useToast();
     const { mutate: UpdateData } = useMutation({
-        mutationFn: async ({ id, name, faculty }: Department) => await axios.post(`/api/admin/management/department/${id}`, { name, faculty }),
-        onSuccess: (data) => console.log('success'),
+        mutationFn: async ({
+            id: { type: idType, value: idValue },
+            name: { type: nameType, value: nameValue },
+            faculty: { type: facultyType, value: facultyValue } }: Department) => await axios.post(`/api/admin/management/department/${idValue}`, {
+                name: nameValue,
+                faculty: facultyValue
+            }),
+        onSuccess: (data) => toast({
+            title: "Data Updated",
+            description: "Data updated successfuly.",
+            variant: "success"
+        }),
         onError: (err: any) => {
             toast({
                 title: "Something went wrong",
@@ -85,6 +96,11 @@ export function DataTable<TData extends Department, TValue>({
         data: tableData,
         columns: columns as ColumnDef<Department, any>[],
         getCoreRowModel: getCoreRowModel(),
+        onSortingChange: setSorting,
+        getSortedRowModel: getSortedRowModel(),
+        state: {
+            sorting,
+        },
         defaultColumn,
         meta: {
             updateData: (rowIndex: any, columnId: keyof Department, value: any) => {
@@ -93,11 +109,20 @@ export function DataTable<TData extends Department, TValue>({
                 setData(old =>
                     old.map((row, index) => {
                         if (index === rowIndex) {
-                            if (row[columnId] !== value) {
-                                UpdateData({ ...old[rowIndex]!, [columnId]: value })
+                            if (row[columnId].value !== value) {
+                                UpdateData({
+                                    ...old[rowIndex]!,
+                                    [columnId]: {
+                                        type: row[columnId].type,
+                                        value
+                                    }
+                                })
                                 return {
                                     ...old[rowIndex]!,
-                                    [columnId]: value,
+                                    [columnId]: {
+                                        value,
+                                        type: row[columnId].type
+                                    },
                                 }
                             }
                         }

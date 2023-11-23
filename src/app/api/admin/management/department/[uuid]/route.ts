@@ -1,0 +1,47 @@
+import { prisma } from "@/lib/db"
+import { NextResponse } from "next/server"
+
+export async function POST(
+    request: Request,
+    { params }: { params: { uuid: string } }
+) {
+    try {
+        const uuid = params.uuid
+        const { name, faculty } = await request.json()
+        const check = await prisma.department.findFirst({
+            where: {
+                id: uuid
+            }
+        })
+
+        if (!check) return NextResponse.json({
+            success: false,
+            message: "Data did not exists"
+        })
+
+        const departmentUpdate = await prisma.department.update({
+            where: {
+                id: uuid
+            },
+            data: {
+                name,
+                Faculty: {
+                    update: {
+                        name: faculty
+                    }
+                }
+            }
+        })
+
+
+        return NextResponse.json({
+            success: true,
+            data: departmentUpdate
+        })
+    } catch (error) {
+        return NextResponse.json({
+            success: false,
+            message: "Invalid JSON"
+        }, { status: 403 })
+    }
+}

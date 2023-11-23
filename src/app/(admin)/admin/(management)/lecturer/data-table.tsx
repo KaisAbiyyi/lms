@@ -75,7 +75,11 @@ export function DataTable<TData extends Lecturer, TValue>({
     const { toast } = useToast();
     const { mutate: UpdateData } = useMutation({
         mutationFn: async ({ id, lecturerNumber, name, email }: Lecturer) => await axios.post(`/api/admin/management/lecturer/${id}`, { lecturerNumber, name, email }),
-        onSuccess: (data) => console.log('success'),
+        onSuccess: (data) => toast({
+            title: "Data Updated",
+            description: "Data updated successfuly.",
+            variant: "success"
+        }),
         onError: (err: any) => {
             toast({
                 title: "Something went wrong",
@@ -117,11 +121,6 @@ export function DataTable<TData extends Lecturer, TValue>({
                                     }
                                 } else {
                                     UpdateData({ ...old[rowIndex]!, [columnId]: value })
-                                    toast({
-                                        title: "Data Updated",
-                                        description: columnId + " updated successfuly.",
-                                        variant: "success"
-                                    })
                                     return {
                                         ...old[rowIndex]!,
                                         [columnId]: value,
