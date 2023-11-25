@@ -1,6 +1,7 @@
 import { Toaster } from '@/components/ui/toaster'
 import './globals.css'
 import type { Metadata } from 'next'
+import TanstackQueryProvider from '@/components/Providers/TanstackQueryProviders'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -16,7 +17,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <main className='font-sans'>
-          {children}
+          <TanstackQueryProvider>
+            {children}
+          </TanstackQueryProvider>
         </main>
         <Toaster />
       </body>

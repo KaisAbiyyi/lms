@@ -17,14 +17,12 @@ export default function AdminLayout({
                 <AdminSidebar />
             }
             <div className="w-5/6 px-12 flex flex-col">
-                <TanstackQueryProvider>
                     {!path.match('/admin/login') &&
                         <AdminNavbar />
                     }
                     <div className="flex flex-col">
                         {children}
                     </div>
-                </TanstackQueryProvider>
             </div>
         </div>
     )
